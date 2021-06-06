@@ -10,16 +10,17 @@ QToggleButton has the same checked states as QCheckBox.
 You can use tri state.
 
 1. Qt::UnChecked
-   <img src="pictures\off.png" alt="off" style="zoom:50%;" />
+   - <img src="pictures\off.png" alt="off"  />
 2. Qt::PartiallyChecked
-   <img src="pictures\partially.png" alt="partially" style="zoom:50%;" />
+   - <img src="pictures\partially.png" alt="partially"  />
 3. Qt::Checked
-   <img src="pictures\on.png" alt="on" style="zoom:50%;" />
+   - <img src="pictures\on.png" alt="on"  />
 
 ### Features
 
 You can move the slider away from text by using "setSliderLayout()".
-<img src="pictures\far.png" alt="far" style="zoom:50%;" />
+
+<img src="pictures\far.png" alt="far"  />
 
 You can set icon same as QCheckBox.
 The icon is set the left of text.
