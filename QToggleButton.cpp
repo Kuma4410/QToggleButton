@@ -1,124 +1,149 @@
+/**
+ * @file QToggleButton.cpp
+ * @brief Toggle button class
+ * @author Yoshito Kumakura
+ * @date 2021.06.05
+ * @version 0.0
+ * copyright All rights reserved.
+ */
+
 #include "QToggleButton.h"
 #include <qboxlayout.h>
-#include <qevent.h>
-#include <qfontmetrics.h>
 #include <qlabel.h>
-#include <qpainter.h>
 #include <qslider.h>
 
+/**
+ * @brief Constructor
+ * @param[in] parent parent widget
+ * @detail Create layout in checkbox
+ */
 QToggleButton::QToggleButton(QWidget *parent /* = nullptr */)
     : QCheckBox(parent)
-    //, _icon(new QLabel(this))
-    //, _label(new QLabel(this))
-    //, _slider(new QSlider(this))
-    //, _sliderSize(QSize())
-    //, _sliderLayout(NearText)
+    , _icon(new QLabel(this))
+    , _label(new QLabel(this))
+    , _slider(new QSlider(this))
+    , _sliderLayout(NearText)
 {
-    //QHBoxLayout *layout = new QHBoxLayout(this);
-    //layout->addWidget(_icon);
-    //layout->addWidget(_label);
-    //layout->addWidget(_slider);
-    //layout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding));
-    //setLayout(layout);
-    //_slider->setMinimum(0);
-    //_slider->setMaximum(1);
-    //_slider->setSingleStep(1);
-    //_slider->setOrientation(Qt::Horizontal);
-    //connect(this, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged(int)));
-    //connect(_slider, SIGNAL(valueChanged(int)), this, SLOT(onSliderValueChanged(int)));
+    QHBoxLayout *hlayout = new QHBoxLayout(this);
+    hlayout->setMargin(0);
+    hlayout->addWidget(_icon);
+    hlayout->addWidget(_label);
+    hlayout->addWidget(_slider, 0, Qt::AlignLeading);
+    hlayout->addSpacerItem(new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Preferred));
+    setLayout(hlayout);
+    _slider->setOrientation(Qt::Horizontal);
+    _slider->setPageStep(0);
+    connect(this, SIGNAL(stateChanged(int)), this, SLOT(onStateChanged(int)));
+    connect(_slider, SIGNAL(sliderReleased()), this, SLOT(onSliderReleased()));
 }
 
+/**
+ * @brief Destructor
+ */
 QToggleButton::~QToggleButton()
 {
 }
 
-/*
+/**
+ * @brief Set icon
+ * @param[in] icon icon
+ * @detail Override QCheckBox setIcon()
+ */
 void QToggleButton::setIcon(const QIcon &icon)
 {
     QCheckBox::setIcon(icon);
-    QSize size = iconSize();
-    QPixmap pixmap = icon.pixmap(size);
-    _icon->setPixmap(pixmap);
+    _icon->setPixmap(icon.pixmap(iconSize()));
 }
-*/
 
+/**
+ * @brief Set whether slider is near or far from text
+ * @param[in] sliderLayout near or far from text
+ * @detail Exchange spacer item
+ */
+void QToggleButton::setSliderLayout(SliderLayout sliderLayout)
+{
+    _sliderLayout = sliderLayout;
+
+    // get spacer item
+    QHBoxLayout *hlayout = qobject_cast< QHBoxLayout* >(layout());
+    QLayoutItem *spacerItem = nullptr;
+    for (int i = 0; i < hlayout->count(); i++)
+    {
+        if (dynamic_cast< QSpacerItem* >(hlayout->itemAt(i)))
+        {
+            spacerItem = layout()->takeAt(i);;
+        }
+    }
+
+    // insert spacer item
+    if (spacerItem)
+    {
+        switch (_sliderLayout)
+        {
+            case NearText:
+            {
+                hlayout->insertItem(3, spacerItem);
+                break;
+            }
+            case FarText:
+            default:
+            {
+                hlayout->insertItem(2, spacerItem);
+                break;
+            }
+        }
+    }
+}
+
+/**
+ * @brief Set text
+ * @param[in] text text
+ * @detail Override QCheckBox setText()
+ */
 void QToggleButton::setText(const QString &text)
 {
     QCheckBox::setText(text);
-    //_label->setText(text);
+    _label->setText(text);
 }
 
+/**
+ * @brief Set whether the checkbox has a tri-state
+ * @param[in] y has tri state
+ * @detail Override QCheckBox setTristate()
+ */
 void QToggleButton::setTristate(bool y)
 {
     QCheckBox::setTristate(y);
-    int max = y ? 2 : 1;
+    int max = y ? _slider->maximum() : (_slider->maximum() - _slider->minimum()) / 2;
     _slider->setMaximum(max);
 }
 
-/*
-void QToggleButton::paintEvent(QPaintEvent *event)
+/**
+ * @brief Paint event
+ * @detail Do NOT paint checkbox because toggle has another layout in constructor
+ * @detail Override QCheckBox paintEvent()
+ */
+void QToggleButton::paintEvent(QPaintEvent *)
 {
-    const int deafultSliderWidth = 100;
-    const int defaultSliderMargin = 50;
+    //QCheckBox::paintEvent(event);
+}
 
-    QPainter painter(this);
-    painter.save();
-
-    // draw icon
-    if (!icon().isNull())
-    {
-        QRect r = _icon->rect();
-        QSize size = iconSize();
-        QPixmap pixmap = icon().pixmap(iconSize());
-        painter.drawPixmap(rect(), pixmap);
-    }
-
-    // draw text
-    //QPalette palette = this->palette();
-    //painter.setPen(palette.text().color());
-    //QRect r = _label->rect();
-    //painter.drawText(rect(), _label->text());
-
-#if 0
-    // get text size
-    QFontMetrics metrics = fontMetrics();
-    QSize textSize = metrics.size(Qt::TextSingleLine | Qt::TextShowMnemonic, text());
-
-    // set slider size
-    QSize sliderSize = _sliderSize.isValid() ? _sliderSize : QSize(deafultSliderWidth, height());
-
-    // set slider position
-    int totalWidth = textSize.width() + defaultSliderMargin + sliderSize.width();
-    int sliderLeft = 0;
-    switch (_sliderLayout)
-    {
-        case NearText:
-        {
-            sliderLeft = (totalWidth < width()) ? textSize.width() : (totalWidth - sliderSize.width());
-            sliderLeft += defaultSliderMargin;
-            break;
-        }
-        case FarText:
-        {
-            sliderLeft = width() - defaultSliderMargin - sliderSize.width();
-            break;
-        }
-        default:
-        {
-            break;
-        }
-    }
-    sliderLeft += defaultSliderMargin;
-    _slider->setGeometry(sliderLeft, 0, 0, 0);
-    _slider->setFixedSize(sliderSize);
-#endif
-
-    // set slider state
-    int value = sliderValue(checkState());
+/**
+ * @brief Set slider value
+ * @param[in] state check state
+ * @detail Slider value changed according to check state
+ */
+void QToggleButton::setSliderValue(Qt::CheckState state)
+{
+    int value = sliderValue(state);
     _slider->setValue(value);
 }
-*/
 
+/**
+ * @brief Get slider value
+ * @param[in] state check state
+ * @return slider value
+ */
 int QToggleButton::sliderValue(Qt::CheckState state) const
 {
     int value = -1;
@@ -126,17 +151,17 @@ int QToggleButton::sliderValue(Qt::CheckState state) const
     {
         case Qt::Unchecked:
         {
-            value = 0;
+            value = _slider->minimum();
             break;
         }
         case Qt::PartiallyChecked:
         {
-            value = 1;
+            value = (_slider->maximum() - _slider->minimum()) / 2;
             break;
         }
         case Qt::Checked:
         {
-            value = isTristate() ? 2 : 1;
+            value = _slider->maximum();
             break;
         }
         default:
@@ -147,28 +172,60 @@ int QToggleButton::sliderValue(Qt::CheckState state) const
     return value;
 }
 
-void QToggleButton::onSliderValueChanged(int value)
+/**
+ * @brief Slot event when slider is released
+ * @detail Update check state and slider value
+ */
+void QToggleButton::onSliderReleased()
 {
-    switch (value)
+    // get current slider value
+    int value = _slider->value();
+
+    // judge check state from slider value
+    int min = _slider->minimum();
+    int max = _slider->maximum();
+    int mid = (max - min) / 2;
+    Qt::CheckState state;
+
+    // slider value depends on tri state
+    if (isTristate())
     {
-        case 0:
+        if (value < mid / 2)
         {
-            setCheckState(Qt::Unchecked);
-            break;
+            state = Qt::Unchecked;
         }
-        case 1:
+        else if (value < mid * 3 / 2)
         {
-            setCheckState(isTristate() ? Qt::PartiallyChecked : Qt::Checked);
-            break;
+            state = Qt::PartiallyChecked;
         }
-        case 2:
+        else
         {
-            setCheckState(Qt::Checked);
-            break;
-        }
-        default:
-        {
-            break;
+            state = Qt::Checked;
         }
     }
+    else
+    {
+        if (value < mid)
+        {
+            state = Qt::Unchecked;
+        }
+        else
+        {
+            state = Qt::Checked;
+        }
+    }
+
+    // set check state and slider value
+    setCheckState(state);
+    setSliderValue(state);
+}
+
+/**
+ * @brief Slot event when check state is changed
+ * @param[in] state check state
+ * @detail Set slider value according to check state
+ */
+void QToggleButton::onStateChanged(int state)
+{
+    setSliderValue(static_cast< Qt::CheckState >(state));
 }
