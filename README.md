@@ -24,7 +24,9 @@ You can move the slider away from text by using "setSliderLayout()".<br>
 You can set icon same as QCheckBox.<br>
 The icon is set the left of text.
 
-You can change slider style by using stylesheet.<br>Please refer to "example/SampleWindow.cpp".<br>![style](pictures\style.png)
+You can change slider style by using stylesheet.<br>
+Please refer to "example/SampleWindow.cpp".<br>
+<img src="pictures\style.png" alt="style"  />
 
 ## Installation
 
