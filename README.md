@@ -1,42 +1,41 @@
 # QToggleButton
 
-### Summary
+## Summary
 
 This is a toggle button class inherit QCheckBox.
 
-### Demo
+## Demo
 
-QToggleButton has the same checked states as QCheckBox.
+QToggleButton has the same checked states as QCheckBox.<br>
 You can use tri state.
 
-1. Qt::UnChecked
-   - <img src="pictures\off.png" alt="off"  />
-2. Qt::PartiallyChecked
-   - <img src="pictures\partially.png" alt="partially"  />
-3. Qt::Checked
-   - <img src="pictures\on.png" alt="on"  />
+1. Qt::UnChecked<br>
+   <img src="pictures\off.png" alt="off"  />
+3. Qt::PartiallyChecked<br>
+   <img src="pictures\partially.png" alt="partially"  />
+4. Qt::Checked<br>
+   <img src="pictures\on.png" alt="on"  />
 
-### Features
+## Features
 
-You can move the slider away from text by using "setSliderLayout()".
-
+You can move the slider away from text by using "setSliderLayout()".<br>
 <img src="pictures\far.png" alt="far"  />
 
-You can set icon same as QCheckBox.
+You can set icon same as QCheckBox.<br>
 The icon is set the left of text.
 
-### Installation
+## Installation
 
-If you use Visual Studio, run "example.vcxproj".
-Please change the project settings according to your environment.
+If you use Visual Studio, run "example.vcxproj".<br>
+Please change the project settings according to your environment.<br>
 As refer, I use "Visual Studio 2015" and "Qt 5.6.3".
 
-### Author
+## Author
 
-Yoshito Kumakura
-kumakura.yoshito@gmail.com
+- Yoshito Kumakura
+- kumakura.yoshito@gmail.com
 
-### License
+## License
 
-QToggleButton is under [Public license](https://github.com/Kuma4410/QToggleButton/blob/main/LICENSE).
+QToggleButton is under [Unlicense](https://github.com/Kuma4410/QToggleButton/blob/main/LICENSE).
 
